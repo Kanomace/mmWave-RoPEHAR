@@ -39,7 +39,7 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 ## 🧠 Roformer Architecture
 
 <p align="center">
-  <img src="fig/fig6.png" width="80%">
+  <img src="fig/fig6.png" width="40%">
 </p>
 
 **Key characteristics:**
@@ -54,26 +54,29 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 ## 📁 Repository Structure
 
 ```bash
-.根目录
-├── Cloud Server
-├── Hardware                           硬件资料
-│   ├── BOM_V1_2023-08-09              硬件接线图
-│   ├── BOM_V1_2023-08-09              物料清单
-│   ├── Gerber_V1_2023-08-09           PCB制版文件
-│   ├── PCB_V1_2023-08-09              PCB文件
-│   └── SCH_Schematic_V1_2023-08-09    原理图文件
-├── Software                           软件资料
-│   ├── Example                        参考例程
-│   │   ├── MQTT_connect.ino           MQTT连接例程
-│   │   └── MQTT_control.ino           MQTT控制例程
-│   └── main
-│       └── main20230813.ino           ESP32代码
-├── Fig                                图表
-│   ├── architectureV2.jpg             系统整体架构图
-│   └── software.jpg                   程序执行流程图
-├── .git                               git仓库文件
-├── .gitattributes                     git仓库文件
-└── README.md               
+mmWave-RoPEHAR/
+├── binData/                    # Dataset
+│   ├── traindata/             # Training data (10 action classes)
+│   │   ├── 0static/
+│   │   ├── 1squat/
+│   │   ├── 2stand/
+│   │   └── ...
+│   └── processed_data/        # Preprocessed voxel data
+├── fig/                       # Figures and visualizations
+├── gui/                       # GUI application
+├── rope_informer/             # Core model implementation
+├── model_checkpoint/          # Saved model weights
+├── main.py                 # Main entry point for training / evaluation pipeline
+├── train_gpu.sh            # Shell script for GPU-based training
+├── train.py                # Model training script
+├── predict.py              # Inference / prediction script
+├── PreDataset.py           # Dataset loader and preprocessing logic (Python)
+├── Voxel.py                # Point cloud voxelization and projection utilities
+├── RoPEHAR.py               # RoPEHAR model definition (Roformer + RoPE)
+├── RoPEHAR.ipynb           # Jupyter notebook for exploratory experiments
+├── results/                   # Experiment outputs
+├── requirements.txt           # Python dependencies
+└── README.md       
 ```
 ---
 
@@ -88,16 +91,18 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 
 ### Action List
 
-- **0**: Static posture  
-- **1**: Squatting  
-- **2**: Standing  
-- **3**: Falling  
-- **4**: Opening cabinet door  
-- **5**: Operating switch  
-- **6**: Closing cabinet door  
-- **7**: Swinging operation  
-- **8**: Rotational operation  
-- **9**: Hanging safety sign  
+| ID | Action Name |
+|----|-------------|
+| 0  | Static posture |
+| 1  | Squatting |
+| 2  | Standing |
+| 3  | Falling |
+| 4  | Opening cabinet door |
+| 5  | Operating switch |
+| 6  | Closing cabinet door |
+| 7  | Trolley swinging |
+| 8  | Rotational operation |
+| 9  | Hanging safety sign |
 
 ---
 
@@ -105,19 +110,17 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 
 ### Environment Setup
 
-conda create -n ropehar python=3.9
-conda activate ropehar
-pip install -r requirements.txt
+git clone https://github.com/YourUsername/mmWave-RoPEHAR.git  
+cd mmWave-RoPEHAR  
 
-If `requirements.txt` is not provided, please manually install the following dependencies:
+conda create -n ropehar python=3.9  
+conda activate ropehar  
+pip install -r requirements.txt  
 
-- PyTorch
-- NumPy
-- SciPy
-- scikit-learn
-- matplotlib
+Required packages include PyTorch, NumPy, SciPy, scikit-learn, and matplotlib.
 
 ---
+
 
 ### Model Training
 
@@ -130,7 +133,7 @@ This command starts training the RoPEHAR model using the provided dataset and de
 
 ### Model Evaluation
 
-python scripts/test.py
+python scripts/predict.py
 
 This command evaluates the trained model on the test split.
 
@@ -144,8 +147,7 @@ python gui_main.py
 The GUI supports the following functionalities:
 
 - Real-time or offline point cloud visualization
-- Human activity inference
-- Action history display
+- Collection of data in bin format and xlsx format
 
 ---
 
@@ -180,5 +182,6 @@ Email: jiacheng008@e.ntu.edu.sg
 
 ## License
 
-This repository is released for academic research only.
-For commercial usage, please contact the authors.
+This repository is released for academic research only.  
+For commercial usage, please contact the authors.  
+This project is licensed under the MIT License.
