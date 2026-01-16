@@ -56,7 +56,7 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 ```bash
 mmWave-RoPEHAR/
 ├── binData/                    # Dataset
-│   ├── traindata/             # Training data (10 action classes)
+│   ├── traindata/              # Training data (10 action classes)
 │   │   ├── 0static/
 │   │   ├── 1squat/
 │   │   ├── 2stand/
@@ -66,14 +66,14 @@ mmWave-RoPEHAR/
 ├── gui/                       # GUI application
 ├── rope_informer/             # Core model implementation
 ├── model_checkpoint/          # Saved model weights
-├── main.py                 # Main entry point for training / evaluation pipeline
-├── train_gpu.sh            # Shell script for GPU-based training
-├── train.py                # Model training script
-├── predict.py              # Inference / prediction script
-├── PreDataset.py           # Dataset loader and preprocessing logic (Python)
-├── Voxel.py                # Point cloud voxelization and projection utilities
-├── RoPEHAR.py               # RoPEHAR model definition (Roformer + RoPE)
-├── RoPEHAR.ipynb           # Jupyter notebook for exploratory experiments
+├── main.py                    # Main entry point for training / evaluation pipeline
+├── train_gpu.sh               # Shell script for GPU-based training
+├── train.py                   # Model training script
+├── predict.py                 # Inference / prediction script
+├── PreDataset.py              # Dataset loader and preprocessing logic (Python)
+├── Voxel.py                   # Point cloud voxelization and projection utilities
+├── RoPEHAR.py                 # RoPEHAR model definition (Roformer + RoPE)
+├── RoPEHAR.ipynb              # Jupyter notebook for exploratory experiments
 ├── results/                   # Experiment outputs
 ├── requirements.txt           # Python dependencies
 └── README.md       
@@ -108,46 +108,43 @@ mmWave-RoPEHAR/
 
 ## Quick Start
 
-### Environment Setup
+1. Environment Setup
+   ```bash
+    git clone https://github.com/YourUsername/mmWave-RoPEHAR.git  
+    cd mmWave-RoPEHAR  
 
-git clone https://github.com/YourUsername/mmWave-RoPEHAR.git  
-cd mmWave-RoPEHAR  
-
-conda create -n ropehar python=3.9  
-conda activate ropehar  
-pip install -r requirements.txt  
+    conda create -n ropehar python=3.9  
+    conda activate ropehar  
+    pip install -r requirements.txt  
 
 Required packages include PyTorch, NumPy, SciPy, scikit-learn, and matplotlib.
 
----
-
-
-### Model Training
-
-cd rope_informer
-python scripts/train.py
-
-This command starts training the RoPEHAR model using the provided dataset and default configuration.
-
----
-
-### Model Evaluation
-
-python scripts/predict.py
-
-This command evaluates the trained model on the test split.
-
----
-
-### GUI Demo
-
-cd gui
-python gui_main.py
+2. Data Collection
+    ```bash    
+    cd gui
+    python gui_main.py
 
 The GUI supports the following functionalities:
 
 - Real-time or offline point cloud visualization
 - Collection of data in bin format and xlsx format
+
+---
+
+3. Model Training
+    ```bash
+    cd rope_informer
+    python scripts/train.py
+
+This command starts training the RoPEHAR model using the provided dataset and default configuration.
+
+---
+
+4. Model Evaluation
+    ```bash
+    python scripts/predict.py
+
+This command evaluates the trained model on the test split.
 
 ---
 
