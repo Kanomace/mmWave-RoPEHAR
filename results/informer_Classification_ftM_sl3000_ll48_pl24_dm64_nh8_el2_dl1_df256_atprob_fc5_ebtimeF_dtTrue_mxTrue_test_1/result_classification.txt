@@ -1,0 +1,3 @@
+informer_Classification_ftM_sl3000_ll48_pl24_dm64_nh8_el2_dl1_df256_atprob_fc5_ebtimeF_dtTrue_mxTrue_test_1  
+accuracy:0.7926829268292683
+

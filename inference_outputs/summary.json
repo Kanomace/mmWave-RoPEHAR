@@ -1,0 +1,13 @@
+{
+  "samples": 340,
+  "has_labels": true,
+  "accuracy": 0.4852941176470588,
+  "elapsed_sec": 6.016956806182861,
+  "classes": {
+    "0": "stationary",
+    "1": "run",
+    "2": "squat",
+    "3": "stand",
+    "4": "walk"
+  }
+}

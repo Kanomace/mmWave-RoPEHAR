@@ -1,0 +1,5 @@
+stationary
+run
+squat
+stand
+walk
