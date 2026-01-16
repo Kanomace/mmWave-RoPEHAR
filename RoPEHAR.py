@@ -1,21 +1,21 @@
-# 环境设置和路径配置
+
 import sys
 import os
 
 
-# 设置模型、数据和输出路径
+# Set the model, data and output paths
 model_path = '/home/jiacheng008/Py_mmWave_Roformer/rope_informer'
 checkpoints = '/home/jiacheng008/Py_mmWave_Roformer/checkpoints/'
 output_path = '/home/jiacheng008/Py_mmWave_Roformer/test_results/'
 
-# 确保目录存在
+# Ensure that the directory exists
 os.makedirs(checkpoints, exist_ok=True)
 os.makedirs(output_path, exist_ok=True)
 
-# 将模型路径添加到sys.path
+# Add the model path to sys.path
 sys.path.append(os.path.dirname(model_path))
 
-print("环境设置完成")
+print("Environment setup completed")
 
 # 导入必要的库
 import numpy as np
@@ -29,11 +29,11 @@ from sklearn.model_selection import train_test_split
 import argparse
 import matplotlib.pyplot as plt
 
-# 注意：移除了 %matplotlib inline，因为这在脚本中不起作用
 
-print("库导入完成")
 
-# 数据路径定义和类别映射
+print("Library import completed")
+
+# Definition of Data Path and Category Mapping
 data_paths = {
     "stationary": {
         "xoz": "/home/jiacheng008/Py_mmWave_Roformer/Dataset/stationary/pHistBytes_clustered_voxel/pHistBytes_clustered_voxel_XOZ",
@@ -57,7 +57,7 @@ data_paths = {
     }
 }
 
-# 行为类别映射
+# Behavior Category Mapping
 behavior_mapping = {
     "stationary": 0,
     "run": 1,
@@ -66,16 +66,16 @@ behavior_mapping = {
     "walk": 4
 }
 
-# 图像尺寸定义
+# Definition of Image Size
 image_sizes = {
-    "xoz": (25, 25),  # XOZ视角图像尺寸
-    "yoz": (25, 15)  # YOZ视角图像尺寸
+    "xoz": (25, 25),
+    "yoz": (25, 15)
 }
 
 print("数据路径和类别定义完成")
 
 
-# 自定义数据集类（支持滑窗）
+# Custom Dataset Class (Supporting Sliding Window)
 class BehaviorDataset(Dataset):
     def __init__(self, data_paths, window_size=3, seq_len=15000, is_train=True):
         self.window_size = window_size
@@ -83,13 +83,13 @@ class BehaviorDataset(Dataset):
         self.data = []
         self.labels = []
 
-        # 收集所有图像路径和标签
+
         print("开始收集数据...")
         for behavior, paths in data_paths.items():
             label = behavior_mapping[behavior]
             print(f"处理行为: {behavior} (标签: {label})")
 
-            # 处理XOZ视角
+            # Handling the XOZ perspective
             xoz_path = paths["xoz"]
             if os.path.exists(xoz_path):
                 xoz_images = []
@@ -97,12 +97,12 @@ class BehaviorDataset(Dataset):
                     if img_name.endswith(('.png', '.jpg', '.jpeg')):
                         xoz_images.append(os.path.join(xoz_path, img_name))
 
-                # 为XOZ视角创建滑窗样本
+                # Create sliding window samples for the XOZ perspective
                 for i in range(len(xoz_images) - window_size + 1):
                     self.data.append((xoz_images[i:i + window_size], label, "xoz"))
                 print(f"  XOZ视角: 添加了 {len(xoz_images) - window_size + 1} 个样本")
 
-            # 处理YOZ视角
+            # Handling the YOZ perspective
             yoz_path = paths["yoz"]
             if os.path.exists(yoz_path):
                 yoz_images = []
@@ -110,19 +110,18 @@ class BehaviorDataset(Dataset):
                     if img_name.endswith(('.png', '.jpg', '.jpeg')):
                         yoz_images.append(os.path.join(yoz_path, img_name))
 
-                # 为YOZ视角创建滑窗样本
+                # Create sliding window samples for the YOZ perspective
                 for i in range(len(yoz_images) - window_size + 1):
                     self.data.append((yoz_images[i:i + window_size], label, "yoz"))
                 print(f"  YOZ视角: 添加了 {len(yoz_images) - window_size + 1} 个样本")
 
         print(f"总共收集到 {len(self.data)} 个样本")
 
-        # 如果没有数据，直接返回
         if len(self.data) == 0:
             print("警告: 没有找到任何数据样本!")
             return
 
-        # 划分训练集和测试集
+        # Divide the training set and the test set
         try:
             train_data, test_data = train_test_split(
                 self.data, test_size=0.2, random_state=42, stratify=[d[1] for d in self.data]
@@ -132,7 +131,7 @@ class BehaviorDataset(Dataset):
             print(f"{'训练' if is_train else '测试'}集大小: {len(self.data)}")
         except Exception as e:
             print(f"划分数据集时出错: {e}")
-            # 如果分层抽样失败，使用普通划分
+
             train_data, test_data = train_test_split(
                 self.data, test_size=0.2, random_state=42
             )
@@ -147,26 +146,23 @@ class BehaviorDataset(Dataset):
 
         # 加载窗口内的所有图像
         for img_path in img_paths:
-            img = Image.open(img_path).convert('L')  # 转换为灰度图
+            img = Image.open(img_path).convert('L')
 
-            # 根据视角调整图像大小
             if view == "xoz":
                 img = img.resize(image_sizes["xoz"])
             else:
                 img = img.resize(image_sizes["yoz"])
 
-            # 转换为numpy数组并展平
             img_array = np.array(img).flatten()
             window_images.append(img_array)
 
-        # 将窗口内的所有图像拼接成一个序列
+        # Combine all the images within the window into a sequence
         sequence = np.concatenate(window_images)
 
-        # 如果序列长度不够，进行填充
         if len(sequence) < self.seq_len:
             pad_width = self.seq_len - len(sequence)
             sequence = np.pad(sequence, (0, pad_width), mode='constant')
-        # 如果序列过长，进行截断
+
         elif len(sequence) > self.seq_len:
             sequence = sequence[:self.seq_len]
 
@@ -175,10 +171,9 @@ class BehaviorDataset(Dataset):
 
 print("自定义数据集类定义完成")
 
-# 创建数据加载器
-# 计算序列长度：每个样本包含3帧，每帧图像展平后的长度
-# XOZ: 25*25 = 625, YOZ: 25*15 = 375
-# 总序列长度 = 3 * (625 + 375) = 3000
+# Create data loader
+# Calculate sequence length: Each sample consists of 3 frames, and the flattened length of each frame image # XOZ: 25*25 = 625, YOZ: 25*15 = 375
+# Total sequence length = 3 * (625 + 375) = 300
 seq_len = 3000
 
 print("创建训练数据集...")
@@ -193,8 +188,7 @@ print(f"训练集大小: {len(train_dataset)}")
 print(f"测试集大小: {len(test_dataset)}")
 print("数据加载器创建完成")
 
-
-# 参数设置
+# Parameter Settings
 class Args:
     def __init__(self):
         self.model = 'informer'
@@ -249,10 +243,10 @@ class Args:
 
 args = Args()
 
-print("参数设置完成")
-print(f"是否使用GPU: {args.use_gpu}")
+print("Parameter settings completed")
+print(f"Do you use a GPU?: {args.use_gpu}")
 
-# 导入模型并设置实验
+# Import the model and set up the experiment
 try:
     from rope_informer import Exp_Informer
 
@@ -262,7 +256,7 @@ except ImportError as e:
     sys.exit(1)
 
 
-# 修改Exp_Informer类以使用新的数据加载器
+# Modify the Exp_Informer class to use the new data loader
 class CustomExp_Informer(Exp_Informer):
     def _get_data(self, flag):
         if flag == 'test':
@@ -271,22 +265,21 @@ class CustomExp_Informer(Exp_Informer):
             return train_dataset, train_loader
 
 
-# 设置实验
+# Set up the experiment
 setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(
     args.model, args.data, args.features,
     args.seq_len, args.label_len, args.pred_len,
     args.d_model, args.n_heads, args.e_layers, args.d_layers, args.d_ff, args.attn, args.factor,
     args.embed, args.distil, args.mix, args.des, 1)
 
-exp = CustomExp_Informer(args)  # 使用自定义的实验类
+exp = CustomExp_Informer(args)
 
-print("模型导入和实验设置完成")
+print("Model import and experiment setup completed")
 
-# 模型训练
 print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
 exp.train(setting)
 
-print("模型训练完成")
+print("Model training completed")
 
 # 模型测试
 print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
@@ -294,23 +287,23 @@ exp.test(setting)
 
 torch.cuda.empty_cache()
 
-print("模型测试完成")
+print("Model testing completed")
 
-# 结果可视化
+# results visualization
 try:
     truth = np.load(os.path.join(args.output_path, setting, "true.npy"))
     preds = np.load(os.path.join(args.output_path, setting, "pred.npy"))
 
 
-    # 计算每个类别的总数和预测正确的数量
+    # Calculate the total number of each category and the number of correct predictions
     bin_counts = np.bincount(truth, minlength=5)
     correct_counts = np.bincount(truth[preds == truth], minlength=5)
 
-    # 计算准确率
+    # Calculate the accuracy rate
     accuracy = np.sum(preds == truth) / len(truth)
-    print(f"总体准确率: {accuracy:.4f}")
+    print(f"Overall accuracy rate: {accuracy:.4f}")
 
-    # 绘制直方图
+    # Draw a histogram
     categories = ['stationary', 'run', 'squat', 'stand', 'walk']
     plt.figure(figsize=(10, 6))
     plt.bar(categories, bin_counts, width=0.5, align='center', alpha=0.8, label='truth', color='purple')
@@ -322,6 +315,6 @@ try:
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig('/home/jiacheng008/Py_mmWave_Roformer/behavior_classification_results_window.png')
-    print("结果可视化完成并保存为图像")
+    print("The result visualization has been completed and saved as an image.")
 except Exception as e:
-    print(f"结果可视化失败: {e}")
+    print(f"The result visualization failed.: {e}")

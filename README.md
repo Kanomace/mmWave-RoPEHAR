@@ -128,6 +128,7 @@ The GUI supports the following functionalities:
 
 - Real-time or offline point cloud visualization
 - Collection of data in bin format and xlsx format
+- For more detailed collection methods, please refer to my Chinese blog: https://jiachenghuang.com/blogs/mmWaveGUI
 
 ---
 
