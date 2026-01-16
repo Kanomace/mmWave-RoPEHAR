@@ -23,7 +23,7 @@ RoPEHAR is a **millimeter-wave radar based human activity recognition (HAR) syst
 ## 📐 System Overview
 
 <p align="center">
-  <img src="fig/fig1.jpg" width="40%">
+  <img src="fig/fig1.jpg" width="80%">
 </p>
 
 **Processing pipeline:**
